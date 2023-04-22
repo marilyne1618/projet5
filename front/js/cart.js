@@ -4,6 +4,11 @@ const cart = []
 retrieveItemsFromCache()
 cart.forEach((item) => displayItem(item))
 
+//bouton commander
+const orderButton = document.querySelector("#order")
+orderButton.addEventListener("click", (e) => submitForm(e))
+
+
 function retrieveItemsFromCache() {
     const numberOfitems = localStorage.length
     //Récupération de l'item
@@ -76,7 +81,6 @@ function deleteItem(item) {
         (product) => product.id === item.id && product.color === item.color
     )
     cart.splice(itemToDelete, 1)
-    console.log(cart)
     displayTotalPrice()
     displayTotalQuantity()
     deleteDataFromCache(item)
@@ -88,7 +92,6 @@ function deleteArticleFromPage(item) {
     const articleToDelete = document.querySelector(
         `article[data-id="${item.id}"][data-color="${item.color}"]`
     )
-    console.log("Deleting article", articleToDelete)
     articleToDelete.remove()
 }
 
@@ -167,10 +170,93 @@ function makeImageDiv(item) {
     const div = document.createElement("div")
     // Ajout de la class "cart__item__img"
     div.classList.add("cart__item__img")
-
     const image = document.createElement("img")
     image.src = item.imageUrl
     image.alt = item.altTxt
     div.appendChild(image)
     return div
 }
+
+ //Formulaire
+function submitForm(e) {
+    //Ne pas rafraichir
+    e.preventDefault()
+    if (cart.length === 0) {
+        alert("Sélectionnez un article")
+        return
+    }
+     //Vérifie si le formulaire est invalide
+    if (isFormInvalid()) return
+    if (isEmailInvalid()) return
+
+     //Fonction post pour envoyer le formulaire au back-end
+    const body = makeRequestBody()
+    fetch("http://localhost:3000/api/products/order", {
+        method: "POST",
+        body: JSON.stringify(body),
+        headers: {
+            "content-type": "application/json"
+        }
+    })
+        .then((res) => res.json())
+        .then((data) => console.log(data))
+}
+
+function isEmailInvalid () {
+    const email = document.querySelector("#email").value
+    const regex = /^[A-Za-z0-9+_.-]+@(.+)$/
+    if (regex.test (email) === false) {
+        alert("Entrez une adresse mail valide")
+        return true
+    }
+    return false
+}
+
+function isFormInvalid() {
+    const form = document.querySelector(".cart__order__form")
+    //Si un champ du formulaire est manquant impossible de valider
+    const inputs = form.querySelectorAll("input")
+    inputs.forEach((input) => {
+        if (input.value === "") {
+            alert("Remplissez tous les champs du formulaire")
+            return true
+        }
+        //validation possible
+        return false
+    })
+}
+
+function makeRequestBody() {
+    const form = document.querySelector(".cart__order__form")
+    const firstName = form.elements.firstName.value
+    const lastName = form.elements.lastName.value
+    const address = form.elements.address.value
+    const city = form.elements.city.value
+    const email = form.elements.email.value
+    const body = {
+        contact: {
+            firstName: firstName,
+            lastName: lastName,
+            address: address,
+            city: city,
+            email: email
+        },
+        products: getIdsFromCache()
+    }
+    return body
+}
+
+ //Récupération de tous les ID
+function getIdsFromCache(){
+    const numberOfProducts = localStorage.length
+    const ids = []
+    for (let i = 0; i < numberOfProducts; i++) {
+        const key = localStorage.key(i)
+        //obtenir la key de l'id mais sans la couleur
+        const id = key.split("-")[0]
+        ids.push(id)
+    }
+    return ids
+}
+    
+
