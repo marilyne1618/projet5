@@ -1,11 +1,11 @@
 fetch("http://localhost:3000/api/products")
-    // ce code permet d'envoyer des requêtes pour récupérer les produits
+    // récupération des données des produits
     .then((res) => res.json())
     .then((data) => addProducts(data))
-// return sert à renvoyer la promesse
+
 
 function addProducts(kanapes) {
-    // Fonction pour la récupération des produits
+    // Fonction pour la création des éléments
     kanapes.forEach((kanap) => {
         const { _id, imageUrl, altTxt, name, description } = kanap
         const anchor = makeAnchor(_id)
@@ -20,23 +20,23 @@ function addProducts(kanapes) {
 }
 
 function appendElementsToArticle(article, image, h3, p) {
+    //Mettre image, h3 et p dans la balise <article>
     article.appendChild(image)
     article.appendChild(h3)
     article.appendChild(p)
 }
 
 function makeAnchor(id) {
-    // Fonction pour la création des éléments
+    // Fonction pour la création de l'élément "href"
     const anchor = document.createElement("a")
     //renvoi sur la page product.html
     anchor.href = "./product.html?id=" + id
-    // sortir "anchor" de function
+    // return sert à renvoyer la promesse
     return anchor
 }
 
 function appendArticleToAnchor(anchor, article) {
-    // Fonction pour créer la balise article
-    // récupération de l'ID #items
+    // Création de l'ID #items
     const items = document.querySelector("#items")
     // Mettre "a" nommé "anchor" à l'intérieur de l'ID "#items"
     items.appendChild(anchor)

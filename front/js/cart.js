@@ -16,12 +16,13 @@ function retrieveItemsFromCache() {
         const item = localStorage.getItem(localStorage.key(i)) || ""
         // JSON.parse transforme un string (texte) en objet
         const itemObject = JSON.parse(item)
-        //Dans chaque objet trouvé pusher dans le cart l'objet correspondant
+        //Dans chaque objet trouvé mettre dans le cart l'objet correspondant
         cart.push(itemObject)
     }
 }
 
 function displayItem(item) {
+    //création des éléments de la quantité et du prix total
     const article = makeArticle(item)
     const imageDiv = makeImageDiv(item)
     article.appendChild(imageDiv)
@@ -33,20 +34,21 @@ function displayItem(item) {
 }
 
 function displayTotalQuantity() {
-    //Fonction pour que le prix total change en fonction de la quantité
+    //Fonction pour que la quantité totale s'affiche
     const totalQuantity = document.querySelector("#totalQuantity")
     const total = cart.reduce((total, item) => total + item.quantity, 0)
     totalQuantity.textContent = total
 }
 
 function displayTotalPrice() {
-    //Fonction pour que le prix total s'affiche
+    //Fonction pour que le prix total s'affiche en fonction de la quantité
     const totalPrice = document.querySelector("#totalPrice")
     const total = cart.reduce((total, item) => total + item.price * item.quantity, 0)
     totalPrice.textContent = total
 }
 
 function makeCartContent(item) {
+    //création de la balise description
     const cartItemContent = document.createElement("div")
     cartItemContent.classList.add("cart__item__content")
     const description = makeDescription(item)
@@ -57,8 +59,9 @@ function makeCartContent(item) {
 }
 
 function makeSettings(item) {
+    //création de l'élément pour séléctionner la Quantité
     const settings = document.createElement("div")
-    settings.classList.add("cart__itm__content__description__settings")
+    settings.classList.add("cart__item__content__description__settings")
     addQuantityToSettings(settings, item)
     addDeleteToSettings(settings, item)
     return settings
@@ -96,12 +99,13 @@ function deleteArticleFromPage(item) {
 }
 
 function deleteDataFromCache(item) {
-    //Supprime la key
+    //Fonction pour vider le cache
     const key = `${item.id}-${item.color}`
     localStorage.removeItem(key)
 }
 
 function addQuantityToSettings(settings, item) {
+    //Création de l'input pour modifier la quantité 
     const quantity = document.createElement("div")
     quantity.classList.add("cart__item__content__settings__quantity")
     const p = document.createElement("p")
@@ -139,6 +143,7 @@ function saveNewDataToCache(item) {
 }
 
 function makeDescription(item) {
+    //Fonction qui affiche la descrition et le prix des produits
     const description = document.createElement("div")
     description.classList.add("cart__item__content__description")
     const h2 = document.createElement("h2")
@@ -158,6 +163,7 @@ function displayArticle(article) {
 }
 
 function makeArticle(item) {
+    //Affichage de l'article en fonction du modèle et de la couleur
     const article = document.createElement("article")
     article.classList.add("cart__item")
     article.dataset.id = item.id
@@ -177,19 +183,19 @@ function makeImageDiv(item) {
     return div
 }
 
- //Formulaire
+//Formulaire
 function submitForm(e) {
     //Ne pas rafraichir
     e.preventDefault()
     if (cart.length === 0) {
-        alert("Sélectionnez un article")
+        alert("Veuillez sélectionner une couleur et une quantité")
         return
     }
-     //Vérifie si le formulaire est invalide
+    //Vérifie si le formulaire est invalide
     if (isFormInvalid()) return
     if (isEmailInvalid()) return
 
-     //Fonction post pour envoyer le formulaire au back-end
+    //Fonction post pour envoyer le formulaire au back-end
     const body = makeRequestBody()
     fetch("http://localhost:3000/api/products/order", {
         method: "POST",
@@ -199,13 +205,21 @@ function submitForm(e) {
         }
     })
         .then((res) => res.json())
-        .then((data) => console.log(data))
+        //Pour être diriger vers la page de confirmation
+        .then((data) => {
+            const orderId = data.orderId
+            console.log(orderId)
+            window.location.href = "/front/html/confirmation.html" + "?orderId=" + orderId
+            return console.log(data)
+        })
+        .catch((err) => console.error(err))
 }
 
-function isEmailInvalid () {
+function isEmailInvalid() {
+    //Création d'une alerte si l'adresse mail ne comporte pas les caractères adéquates
     const email = document.querySelector("#email").value
     const regex = /^[A-Za-z0-9+_.-]+@(.+)$/
-    if (regex.test (email) === false) {
+    if (regex.test(email) === false) {
         alert("Entrez une adresse mail valide")
         return true
     }
@@ -225,8 +239,8 @@ function isFormInvalid() {
         return false
     })
 }
-
 function makeRequestBody() {
+    //création du formulaire
     const form = document.querySelector(".cart__order__form")
     const firstName = form.elements.firstName.value
     const lastName = form.elements.lastName.value
@@ -244,10 +258,11 @@ function makeRequestBody() {
         products: getIdsFromCache()
     }
     return body
+
 }
 
- //Récupération de tous les ID
-function getIdsFromCache(){
+//Récupération de tous les ID
+function getIdsFromCache() {
     const numberOfProducts = localStorage.length
     const ids = []
     for (let i = 0; i < numberOfProducts; i++) {
@@ -256,7 +271,8 @@ function getIdsFromCache(){
         const id = key.split("-")[0]
         ids.push(id)
     }
+    console.log(ids)
     return ids
 }
-    
+
 
