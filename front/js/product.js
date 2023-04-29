@@ -8,6 +8,7 @@ if (id != null) {
     let itemPrice = 0
     let imgUrl
     let altText
+    let articleName
 }
 
 // Requête au serveur pour obtenir plus d'informations
@@ -77,18 +78,15 @@ function handleClick() {
     //Permet de sélectionner la couleur et la quantité
     const color = document.querySelector("#colors").value
     const quantity = document.querySelector("#quantity").value
+    
     if (isOrderInvalid(color, quantity)) return
     saveOrder(color, quantity)
-    function redirectToCart() {
-        // Propriété qui obtient l'adresse actuelle et qui redirige vers une nouvelle page
-        window.location.href = "cart.html"
-    }
     redirectToCart()
 }
 
 function saveOrder(color, quantity) {
     // Utilisation du localStorage pour ajouter des produits dans le panier
-    const key = `(${id}-${color})`
+    const key = `${id}-${color}`
     const data = {
         //Apparition des produits par couleurs et par modèles
         id: id,
@@ -100,7 +98,7 @@ function saveOrder(color, quantity) {
         name: articleName,
     }
     // JSON.stringify transforme un objet en string (en texte)
-    localStorage.setItem(id, JSON.stringify(data))
+    localStorage.setItem(key, JSON.stringify(data))
 }
 
 function isOrderInvalid(color, quantity) {
@@ -112,4 +110,8 @@ function isOrderInvalid(color, quantity) {
     }
 }
 
+function redirectToCart() {
+    // Propriété qui obtient l'adresse actuelle et qui redirige vers une nouvelle page
+    window.location.href = "cart.html"
+}
 

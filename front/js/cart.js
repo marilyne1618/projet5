@@ -1,4 +1,4 @@
-// Création d'une array pour obtenir une liste totale de cart
+// Création d'une array pour obtenir une liste totale du cart
 const cart = []
 
 retrieveItemsFromCache()
@@ -8,10 +8,9 @@ cart.forEach((item) => displayItem(item))
 const orderButton = document.querySelector("#order")
 orderButton.addEventListener("click", (e) => submitForm(e))
 
-
 function retrieveItemsFromCache() {
     const numberOfitems = localStorage.length
-    //Récupération de l'item
+    //Récupération des données de l'item dans le LocalStorage
     for (let i = 0; i < numberOfitems; i++) {
         const item = localStorage.getItem(localStorage.key(i)) || ""
         // JSON.parse transforme un string (texte) en objet
@@ -22,7 +21,7 @@ function retrieveItemsFromCache() {
 }
 
 function displayItem(item) {
-    //création des éléments de la quantité et du prix total
+    //création les éléments du html du cart
     const article = makeArticle(item)
     const imageDiv = makeImageDiv(item)
     article.appendChild(imageDiv)
@@ -152,6 +151,7 @@ function makeDescription(item) {
     p.textContent = item.color
     const p2 = document.createElement("p")
     p2.textContent = item.price + " €"
+
     description.appendChild(h2)
     description.appendChild(p)
     description.appendChild(p2)
@@ -161,7 +161,6 @@ function makeDescription(item) {
 function displayArticle(article) {
     document.querySelector("#cart__items").appendChild(article)
 }
-
 function makeArticle(item) {
     //Affichage de l'article en fonction du modèle et de la couleur
     const article = document.createElement("article")
@@ -188,7 +187,7 @@ function submitForm(e) {
     //Ne pas rafraichir
     e.preventDefault()
     if (cart.length === 0) {
-        alert("Veuillez sélectionner une couleur et une quantité")
+        alert("Veuillez sélectionner un article dans le panier")
         return
     }
     //Vérifie si le formulaire est invalide
@@ -271,7 +270,6 @@ function getIdsFromCache() {
         const id = key.split("-")[0]
         ids.push(id)
     }
-    console.log(ids)
     return ids
 }
 
