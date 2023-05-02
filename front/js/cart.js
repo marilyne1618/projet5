@@ -226,17 +226,16 @@ function isEmailInvalid() {
 }
 
 function isFormInvalid() {
-    const form = document.querySelector(".cart__order__form")
-    //Si un champ du formulaire est manquant impossible de valider
-    const inputs = form.querySelectorAll("input")
-    inputs.forEach((input) => {
-        if (input.value === "") {
-            alert("Remplissez tous les champs du formulaire")
+    const firstName = document.querySelector("#firstName").value
+    //Si un champ du prénom contient des chiffres impossible de valider
+    const regex = /^[A-Z][A-Za-z\é\è\ê\-]+$/
+        if (regex.test(firstName) === false) {
+            alert("Remplissez correctement les champs du formulaire")
             return true
         }
         //validation possible
         return false
-    })
+    
 }
 function makeRequestBody() {
     //création du formulaire
